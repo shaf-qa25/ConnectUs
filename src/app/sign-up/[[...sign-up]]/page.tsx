@@ -44,7 +44,7 @@ export default function SignUpPage() {
           </div>
 
           {/* Quick Value Pillars */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
             <div className="flex items-start gap-3 p-3.5 rounded-xl border border-zinc-900 bg-zinc-900/30 backdrop-blur-sm">
               <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                 <GraduationCap className="h-5 w-5" />
@@ -64,13 +64,13 @@ export default function SignUpPage() {
                 <p className="text-xs text-zinc-500 mt-0.5">Web Dev, AI/ML, and Startup communities.</p>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Security Badge */}
-          <div className="flex items-center gap-2 border border-zinc-900 bg-zinc-900/15 backdrop-blur-md py-1.5 px-3 rounded-full w-fit">
+          {/* <div className="flex items-center gap-2 border border-zinc-900 bg-zinc-900/15 backdrop-blur-md py-1.5 px-3 rounded-full w-fit">
             <Shield className="h-4 w-4 text-blue-400" />
             <span className="text-xs text-zinc-500 font-medium">Secured by Clerk Standard-Grade Shield</span>
-          </div>
+          </div> */}
 
         </div>
 

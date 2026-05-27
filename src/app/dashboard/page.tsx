@@ -122,26 +122,7 @@ export default async function DashboardPage() {
       <main className="mx-auto max-w-7xl px-6 py-10 sm:px-8">
         
         {/* Welcome Section */}
-        <section className="relative rounded-2xl border border-zinc-900 bg-zinc-900/10 p-8 shadow-xl backdrop-blur-sm overflow-hidden mb-10">
-          <div className="absolute top-0 right-0 h-full w-1/3 bg-linear-to-l from-blue-600/5 to-transparent pointer-events-none" />
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <img 
-              src={imageUrl} 
-              alt={name} 
-              className="h-20 w-20 rounded-2xl border border-zinc-800 object-cover shadow-md"
-            />
-            <div className="text-center sm:text-left space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/15 bg-blue-500/5 px-3 py-1 text-xs font-semibold text-blue-400">
-                <span className="flex h-1.5 w-1.5 rounded-full bg-blue-400" />
-                Clerk Secure Profile
-              </div>
-              <h2 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user.firstName || "Member"}!</h2>
-              <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
-                You are currently inside the protected **ConnectUs Dashboard**. Below is the architectural prepare-layer for college roles that will connect directly to the Prisma & PostgreSQL backend database in subsequent updates.
-              </p>
-            </div>
-          </div>
-        </section>
+        
 
         {/* Core Layout Grid: Left Details / Right Architectures */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
