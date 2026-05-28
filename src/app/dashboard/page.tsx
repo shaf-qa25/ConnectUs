@@ -1,4 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
+import { syncUser } from "@/lib/sync-user";
 import { redirect } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { 
@@ -64,13 +65,17 @@ const ROLE_ARCHITECTURES: Record<UserRole, RoleMetadata> = {
 
 export default async function DashboardPage() {
   // Retrieve the authenticated user server-side using Clerk's production-best practices
-  const user = await currentUser();
+   const user = await currentUser();/////   ye new changess islye h kyuki  ab isse pta chleega ki ye new user db me store h ki nhi ............
+ 
 
   // If no user is logged in, redirect them (handled by middleware but added as secondary safety)
   if (!user) {
     redirect("/sign-in");
-  }
-
+  } 
+  const dbUser = await syncUser();
+// if (!dbUser?.onboardingCompleted) {
+//   redirect("/onboarding");
+// }
   // Fallbacks for display
   const name = user.firstName ? `${user.firstName} ${user.lastName || ""}` : "ConnectUs Member";
   const email = user.emailAddresses[0]?.emailAddress || "no-email@connectus.edu";
