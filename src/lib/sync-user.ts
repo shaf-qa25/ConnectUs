@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function syncUser(){
     const {userId} =await  auth();
+    console.log(userId)
 
 
       if (!userId) {
@@ -12,6 +13,7 @@ export async function syncUser(){
   }
 
     const clerkUser = await currentUser();
+    console.log(clerkUser)
 
     if (!clerkUser) {
     return null;
@@ -24,6 +26,7 @@ export async function syncUser(){
   })
 
     if (existingUser) {
+      console.log(existingUser)
     return existingUser;
   }
 
