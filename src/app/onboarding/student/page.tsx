@@ -1,4 +1,4 @@
-import StudentForm from "@/components/onboarding/student-form";
+import StudentForm from "@/component/onboarding/student-form";
 
 export default function StudentPage() {
   return (

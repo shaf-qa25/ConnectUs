@@ -24,7 +24,7 @@ export const studentProfileSchema=z.object({
     .max(500, "Bio cannot exceed 500 characters")
     .optional(),
 
-    linkdinUrl:z
+    linkedinUrl:z
     .string()
     .url("Invalid url ")
     .optional()
@@ -35,5 +35,10 @@ export const studentProfileSchema=z.object({
     .url("Invalid url ")
     .optional()
     .or(z.literal("")),
+
+     skills: z
+    .array(z.string())
+    .min(1, "Add at least one skill")
+    .max(20, "Maximum 20 skills allowed"),
 
 })

@@ -6,9 +6,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { studentProfileSchema } from "@/validation/student";
 
-
-export async function saveStudentProfile(formData: FormData){
-    const { userId } = await auth();
+export async function saveStudentProfile(formData: FormData) {
+  const { userId } = await auth();
 
   if (!userId) {
     throw new Error("Unauthorized");
@@ -33,43 +32,67 @@ export async function saveStudentProfile(formData: FormData){
     graduationYear: Number(
       formData.get("graduationYear")
     ),
+
+    skills: (formData.get("skills") as string)
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter(Boolean),
+
     bio: formData.get("bio") as string,
+
     linkedinUrl: formData.get("linkedinUrl") as string,
+
     githubUrl: formData.get("githubUrl") as string,
   };
-  //Zod validation .../
+
+  // Zod Validation
   const result = studentProfileSchema.safeParse(data);
 
-  if(!result.success){
+  if (!result.success) {
     console.log(result.error.flatten());
 
-    throw new Error(
-      result.error.errors[0]?.message ||
-        "Validation failed"
-    );
-
-
-
-    const ValidateData= result.data;
-
-    /// Student file update 
-
-    await prisma.studentProfile.update({
-        where:{
-            userId:user.id,
-        },
-        data:{
-            studentId:ValidateData?.studentId,
-            course: ValidateData?.course,
-            branch: ValidateData?.branch,
-           graduationYear: ValidateData?.graduationYear,
-            bio: ValidateData?.bio,
-          linkdinUrl:ValidateData?.linkdinUrl,
-             githubUrl: ValidateData?.githubUrl,
-        }
-    })
+    return {
+      success: false,
+      error:
+        result.error.errors[0]?.message ||
+        "Validation failed",
+    };
   }
-   await prisma.user.update({
+
+  const validatedData = result.data;
+
+  // Create or Update Student Profile
+  await prisma.studentProfile.upsert({
+    where: {
+      userId: user.id,
+    },
+
+    update: {
+      studentId: validatedData.studentId,
+      course: validatedData.course,
+      branch: validatedData.branch,
+      graduationYear: validatedData.graduationYear,
+      bio: validatedData.bio,
+      skills: validatedData.skills,
+      linkedinUrl: validatedData.linkedinUrl,
+      githubUrl: validatedData.githubUrl,
+    },
+
+    create: {
+      userId: user.id,
+      studentId: validatedData.studentId,
+      course: validatedData.course,
+      branch: validatedData.branch,
+      graduationYear: validatedData.graduationYear,
+      bio: validatedData.bio,
+      skills: validatedData.skills,
+      linkedinUrl: validatedData.linkedinUrl,
+      githubUrl: validatedData.githubUrl,
+    },
+  });
+
+  // Mark onboarding complete
+  await prisma.user.update({
     where: {
       id: user.id,
     },

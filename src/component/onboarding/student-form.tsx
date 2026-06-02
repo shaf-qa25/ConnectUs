@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { saveStudentProfile } from "@/actions/student-profile";
+import { saveStudentProfile } from "@/action/student-profile";
 
 export default function StudentForm(){
     const[loading,setLoading]=useState(false);
@@ -38,11 +38,17 @@ export default function StudentForm(){
         className="w-full p-3 rounded bg-zinc-900"
       />
 
+    <input
+  type="number"
+  name="graduationYear"
+  placeholder="Graduation Year"
+  className="w-full p-3 rounded bg-zinc-900"
+/>
       <input
-        name="graduationYear"
-        placeholder="Graduation Year"
-        className="w-full p-3 rounded bg-zinc-900"
-      />
+  name="skills"
+  placeholder="React, Node.js, Next.js"
+  className="w-full p-3 rounded bg-zinc-900"
+/>
 
       <textarea
         name="bio"
@@ -50,17 +56,18 @@ export default function StudentForm(){
         className="w-full p-3 rounded bg-zinc-900"
       />
 
-      <input
-        name="linkedinUrl"
-        placeholder="LinkedIn URL"
-        className="w-full p-3 rounded bg-zinc-900"
-      />
-
-      <input
-        name="githubUrl"
-        placeholder="GitHub URL"
-        className="w-full p-3 rounded bg-zinc-900"
-      />
+     <input
+  type="url"
+  name="linkedinUrl"
+  placeholder="LinkedIn URL"
+  className="w-full p-3 rounded bg-zinc-900"
+/>
+    <input
+  type="url"
+  name="githubUrl"
+  placeholder="GitHub URL"
+  className="w-full p-3 rounded bg-zinc-900"
+/>
 
       <button
         type="submit"
