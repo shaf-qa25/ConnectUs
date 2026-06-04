@@ -1,6 +1,19 @@
 import StudentForm from "@/component/onboarding/student-form";
 
-export default function StudentPage() {
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
+import { checkStudentOnboarding } from "@/lib/student-onboarding-guard";
+
+export default async function StudentPage() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  await checkStudentOnboarding(userId);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
       <div className="w-full max-w-2xl">
