@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-// import { redirect } from "next/navigation";
-// import { prisma } from "@/lib/prisma";
 
 import { UserRole } from "@prisma/client";
 
