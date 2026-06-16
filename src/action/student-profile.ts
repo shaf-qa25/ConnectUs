@@ -101,5 +101,5 @@ export async function saveStudentProfile(formData: FormData) {
     },
   });
 
-  redirect("/dashboard");
+  redirect("/student/dashboard");
 }

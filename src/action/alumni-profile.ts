@@ -20,11 +20,11 @@ export async function saveAlumniProfile(
       clerkId: userId,
     },
   });
-
+      
   if (!user) {
     throw new Error("User not found");
   }
-
+   console.log(user);   // this is a basic check 
   const data = {
     company: formData.get("company") as string,
 
@@ -53,7 +53,9 @@ export async function saveAlumniProfile(
   }
 
   const validatedData = result.data;
-
+    
+  console.log(validatedData); // formdata 
+  
   await prisma.alumniProfile.upsert({
     where: {
       userId: user.id,
