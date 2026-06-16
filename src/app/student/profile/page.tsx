@@ -1,7 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma";
+import { getStudentProfile } from "@/services/student.service";
 import { requireRole } from "@/lib/role-gaurd";
 
 export default async function StudentProfilePage() {
@@ -13,14 +14,16 @@ export default async function StudentProfilePage() {
 
   await requireRole(userId, "STUDENT");
 
-  const user = await prisma.user.findUnique({
-    where: {
-      clerkId: userId,
-    },
-    include: {
-      studentProfile: true,
-    },
-  });
+  // const user = await prisma.user.findUnique({
+  //   where: {
+  //     clerkId: userId,
+  //   },
+  //   include: {
+  //     studentProfile: true,
+  //   },
+  // });
+
+  const user= await getStudentProfile(userId);
 
   if (!user || !user.studentProfile) {
     redirect("/onboarding/student");
