@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 // import { prisma } from "@/lib/prisma";
 import { getStudentProfile } from "@/services/student.service";
 import { requireRole } from "@/lib/role-gaurd";
-
+import Link from "next/link";
 export default async function StudentProfilePage() {
   const { userId } = await auth();
 
@@ -98,6 +98,13 @@ export default async function StudentProfilePage() {
 
         </div>
 
+      </div>
+
+      <div>
+        <Link href="student/profile/edit"
+        className="inline-block mt-6 px-5 py-2 rounded bg-blue-600">
+          Edit profile 
+        </Link>
       </div>
     </div>
   );

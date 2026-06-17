@@ -17,7 +17,7 @@ export async function requireRole(
     redirect("/sign-in");
   }
 
-  if (!user.roleSelected) {
+  if (!user.roleSelected) {a
     redirect("/onboarding");
   }
 

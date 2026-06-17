@@ -68,12 +68,13 @@ export async function updateStudentProfile(
         result.error.flatten()
       );
 
-      return {
-        success: false,
-        error:
-          result.error.errors[0]
-            ?.message,
-      };
+        return;
+    //   return {
+    //     success: false,
+    //     error:
+    //       result.error.errors[0]
+    //         ?.message,
+    //   };
     }
 
     await updateStudentProfileByUserId(
@@ -89,12 +90,14 @@ export async function updateStudentProfile(
       "Update Error:",
       error
     );
+      
 
-    return {
-      success: false,
-      error:
-        "Something went wrong",
-    };
+    return ;
+    // return {
+    //   success: false,
+    //   error:
+    //     "Something went wrong",
+    // };
   }
 
   redirect("/student/profile");
