@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/services/auth.service";
 
+import { requireRole } from "@/lib/role-guard";
 import {
   getStudentProfile,
   updateStudentProfileByUserId,
@@ -20,6 +21,11 @@ export async function GET() {
 
     const user =
       await getCurrentUser();
+
+      await requireRole(
+        user.clerkId,
+        "STUDENT"
+      )
 
     const student =
       await getStudentProfile(
