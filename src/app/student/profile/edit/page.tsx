@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-import { requireRole } from "@/lib/role-gaurd";
+import { requireRole } from "@/lib/role-guard";
 
 import { getStudentProfile } from "@/services/student.service";
 

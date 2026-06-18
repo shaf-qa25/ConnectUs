@@ -1,29 +1,29 @@
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+// import { redirect } from "next/navigation";
+// import { prisma } from "@/lib/prisma";
 
-import { UserRole } from "@prisma/client";
+// import { UserRole } from "@prisma/client";
 
-export async function requireRole(
-  clerkId: string,
-  allowedRole: UserRole
-) {
-  const user = await prisma.user.findUnique({
-    where: {
-      clerkId,
-    },
-  });
+// export async function requireRole(
+//   clerkId: string,
+//   allowedRole: UserRole
+// ) {
+//   const user = await prisma.user.findUnique({
+//     where: {
+//       clerkId,
+//     },
+//   });
 
-  if (!user) {
-    redirect("/sign-in");
-  }
+//   if (!user) {
+//     redirect("/sign-in");
+//   }
 
-  if (!user.roleSelected) {a
-    redirect("/onboarding");
-  }
+//   if (!user.roleSelected) {a
+//     redirect("/onboarding");
+//   }
 
-  if (user.roleSelected !== allowedRole) {
-    redirect("/dashboard");
-  }
+//   if (user.roleSelected !== allowedRole) {
+//     redirect("/dashboard");
+//   }
 
-  return user;
-}
+//   return user;
+// }

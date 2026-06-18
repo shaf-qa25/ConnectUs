@@ -1,10 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-
-// import { prisma } from "@/lib/prisma";
-import { getStudentProfile } from "@/services/student.service";
-import { requireRole } from "@/lib/role-gaurd";
 import Link from "next/link";
+
+import { requireRole } from "@/lib/role-guard";
+import { getStudentProfile } from "@/services/student.service";
+
 export default async function StudentProfilePage() {
   const { userId } = await auth();
 
@@ -12,24 +12,27 @@ export default async function StudentProfilePage() {
     redirect("/sign-in");
   }
 
-  await requireRole(userId, "STUDENT");
+  await requireRole(
+    userId,
+    "STUDENT"
+  );
 
-  // const user = await prisma.user.findUnique({
-  //   where: {
-  //     clerkId: userId,
-  //   },
-  //   include: {
-  //     studentProfile: true,
-  //   },
-  // });
+  const user =
+    await getStudentProfile(
+      userId
+    );
 
-  const user= await getStudentProfile(userId);
-
-  if (!user || !user.studentProfile) {
-    redirect("/onboarding/student");
+  if (
+    !user ||
+    !user.studentProfile
+  ) {
+    redirect(
+      "/onboarding/student"
+    );
   }
 
-  const profile = user.studentProfile;
+  const profile =
+    user.studentProfile;
 
   return (
     <div className="min-h-screen bg-black text-white p-10">
@@ -85,26 +88,39 @@ export default async function StudentProfilePage() {
             <strong>Skills:</strong>
 
             <div className="flex flex-wrap gap-2 mt-2">
-              {profile.skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="px-3 py-1 rounded bg-zinc-800"
-                >
-                  {skill}
-                </span>
-              ))}
+              {profile.skills.map(
+                (skill) => (
+                  <span
+                    key={skill}
+                    className="px-3 py-1 rounded bg-zinc-800"
+                  >
+                    {skill}
+                  </span>
+                )
+              )}
             </div>
           </div>
 
         </div>
 
-      </div>
+        <div className="flex gap-4 mt-6">
 
-      <div>
-        <Link href="student/profile/edit"
-        className="inline-block mt-6 px-5 py-2 rounded bg-blue-600">
-          Edit profile 
-        </Link>
+          <Link
+            href="/student/dashboard"
+            className="px-5 py-2 rounded bg-zinc-700"
+          >
+            Dashboard
+          </Link>
+
+          <Link
+            href="/student/profile/edit"
+            className="px-5 py-2 rounded bg-blue-600"
+          >
+            Edit Profile
+          </Link>
+
+        </div>
+
       </div>
     </div>
   );
