@@ -54,7 +54,7 @@ export async function saveStudentProfile(formData: FormData) {
     return {
       success: false,
       error:
-        result.error.errors[0]?.message ||
+        result.error.issues[0]?.message ||
         "Validation failed",
     };
   }

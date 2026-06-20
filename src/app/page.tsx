@@ -1,4 +1,5 @@
 import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -44,12 +45,12 @@ export default function Home() {
             </Show>
 
             <Show when="signed-in">
-              <a 
-                href="#dashboard" 
+              <Link 
+                href="/dashboard" 
                 className="cursor-pointer bg-linear-to-r from-violet-600/10 to-indigo-600/10 hover:from-violet-600/15 hover:to-indigo-600/15 text-violet-600 border border-violet-500/10 dark:text-violet-400 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 mr-2"
               >
                 Go to Dashboard
-              </a>
+              </Link>
               <div className="flex items-center justify-center p-0.5 rounded-full border border-zinc-200 dark:border-zinc-800">
                 <UserButton />
               </div>
