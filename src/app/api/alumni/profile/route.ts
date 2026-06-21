@@ -5,8 +5,6 @@ import { getAlumniProfile,updateAlumniProfileByUserId } from "@/services/alumni.
 import { NextResponse } from "next/server";
 import { success } from "zod";
 
-
-
 // GET  Alumni profile ....
 export async function GET(){
 try {

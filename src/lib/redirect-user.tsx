@@ -1,6 +1,5 @@
 import { UserRole } from "@prisma/client";
 
-
 export function getDashboardRoute(
     role:UserRole
 ){
