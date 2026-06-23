@@ -14,11 +14,20 @@ enum UserRole {
   TNP
 }
 
+enum PostVisibility{
+  COLLEGE_ONLY
+  PUBLIC
+}
+
 model User {
   id                  String    @id @default(uuid())
   clerkId             String    @unique
   email               String    @unique
-  username            String?
+  username            String?   @unique
+
+     profileImageUrl String?
+    coverImageUrl   String?
+    headline        String?
 
   roleSelected        UserRole?
   onboardingCompleted Boolean   @default(false)
@@ -30,6 +39,8 @@ model User {
   alumniProfile       AlumniProfile?
   teacherProfile      TeacherProfile?
   tnpProfile          TnpProfile?
+
+  posts               Post[]
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -113,4 +124,15 @@ model TnpProfile {
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model Post{
+  id    String  @id  @default(uuid())
+ authorId   String
+ author   User  @relation(fields:[authorId],references:[id])
+    content String @db.Text 
+
+   visibility  PostVisibility  @default(COLLEGE_ONLY)
+    createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
