@@ -340,3 +340,139 @@ return {
 
 }
 }
+
+
+
+
+export async function getPostById(
+  postId: string
+) {
+  try {
+    // --------------------------
+    // Authentication
+    // --------------------------
+
+    const { userId } = await auth();
+
+    if (!userId) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    // --------------------------
+    // User Check
+    // --------------------------
+
+    const user = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+      select: {
+        id: true,
+        collegeId: true,
+        onboardingCompleted: true,
+      },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    // --------------------------
+    // Onboarding Check
+    // --------------------------
+
+    if (!user.onboardingCompleted) {
+      return {
+        success: false,
+        message:
+          "Complete onboarding first",
+      };
+    }
+
+    // --------------------------
+    // Validate Post Id
+    // --------------------------
+
+    if (!postId?.trim()) {
+      return {
+        success: false,
+        message: "Post id is required",
+      };
+    }
+
+    // --------------------------
+    // Fetch Post
+    // --------------------------
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            profileImageUrl: true,
+            headline: true,
+            roleSelected: true,
+            collegeId: true,
+          },
+        },
+
+        images: true,
+        videos: true,
+      },
+    });
+
+    if (!post) {
+      return {
+        success: false,
+        message: "Post not found",
+      };
+    }
+
+    // --------------------------
+    // Visibility Check
+    // --------------------------
+
+    if (
+      post.visibility ===
+      "COLLEGE_ONLY"
+    ) {
+      if (
+        !user.collegeId ||
+        user.collegeId !==
+          post.author.collegeId
+      ) {
+        return {
+          success: false,
+          message:
+            "You are not allowed to view this post",
+        };
+      }
+    }
+
+    return {
+      success: true,
+      post,
+    };
+  } catch (error) {
+    console.error(
+      "Get Post By Id Error:",
+      error
+    );
+
+    return {
+      success: false,
+      message: "Failed to fetch post",
+    };
+  }
+}
