@@ -1,12 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
-import { z } from "zod";
+import { string, success, z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { postSchema } from "@/validation/post";
 
 type CreatePostInput = z.infer<typeof postSchema>;
 
-export default async function createPost(
+export  async function createPost(
   data: CreatePostInput
 ) {
   try {
@@ -141,4 +141,202 @@ export default async function createPost(
       message: "Failed to create post",
     };
   }
+}
+
+
+// get post 
+
+// export  async function getFeedPost(){
+
+//   try {
+//     const {userId} =await auth();
+  
+//       if(!userId){
+//         console.log("unauthorised user")
+//         return{
+//           status:false,
+//           message:"unauthorised "
+//         }
+      
+        
+//       }
+//       const user= await prisma.user.findUnique({
+//         where:{
+//          clerkId: userId  },
+//         select:{
+//           id:true,
+//           college:true,
+//           onboardingCompleted:true
+//         }
+//         })
+     
+//     if (!user) {
+//       return {
+//         success: false,
+//         message: "User not found",
+//       };
+//     }
+
+//     // --------------------------
+//     // Onboarding Check
+//     // --------------------------
+
+//     if (!user.onboardingCompleted) {
+//       return {
+//         success: false,
+//         message:
+//           "Complete onboarding before accessign posts",
+//       };
+//     }
+
+  
+//         const posts= await prisma.post.findMany({
+//           where:{
+//             OR:[{
+
+//               visibility:"PUBLIC"
+//             },
+//             {
+//              visibility: "COLLEGE_ONLY",
+//              author:{
+//                collegeId:user.college,
+//              },
+//             },
+//           ]},
+//           include:{
+//             author:{
+//               select:{
+//                 id:true,
+//                 username:true,
+//                 profileImageUrl:true,
+//                 headline: true,
+//                  roleSelected: true,
+//               }
+//             },
+//             images:true,
+//             videos:true
+           
+//           },
+//           orderBy:{
+//             createdAt:"desc"
+//           },
+//           take:20
+//         })
+//         return{
+//           success:true,
+//           posts,
+//         }
+//       }
+    
+//   catch (error) {
+//     console.error(
+//       "fetch  Post Error:",
+//       error
+//     );
+
+  
+
+//     return {
+//       success: false,
+//       message: "Failed to fetch post",
+//     };
+//   }
+// }
+export async function getFeedPost() {
+try {
+const { userId } = await auth();
+
+
+if (!userId) {
+  return {
+    success: false,
+    message: "Unauthorized",
+  };
+}
+
+const user = await prisma.user.findUnique({
+  where: {
+    clerkId: userId,
+  },
+  select: {
+    id: true,
+    collegeId: true,
+    onboardingCompleted: true,
+  },
+});
+
+if (!user) {
+  return {
+    success: false,
+    message: "User not found",
+  };
+}
+
+if (!user.onboardingCompleted) {
+  return {
+    success: false,
+    message:
+      "Complete onboarding before accessing feed",
+  };
+}
+
+const posts = await prisma.post.findMany({
+  where: {
+    OR: [
+      {
+        visibility: "PUBLIC",
+      },
+
+      {
+        visibility: "COLLEGE_ONLY",
+
+        author: {
+          collegeId: user.collegeId,
+        },
+      },
+    ],
+  },
+
+  include: {
+    author: {
+      select: {
+        id: true,
+        username: true,
+        profileImageUrl: true,
+        headline: true,
+        roleSelected: true,
+      },
+    },
+
+    images: true,
+    videos: true,
+  },
+
+  orderBy: {
+    createdAt: "desc",
+  },
+
+  take: 20,
+});
+
+return {
+  success: true,
+  posts,
+};
+
+
+} catch (error) {
+console.error(
+"Get Feed Error:",
+error
+);
+
+
+return {
+  success: false,
+  message: "Failed to fetch feed",
+};
+
+
+}
 }
