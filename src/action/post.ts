@@ -476,3 +476,119 @@ export async function getPostById(
     };
   }
 }
+
+
+export async function deletePost(
+  postId: string
+) {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    const user =
+      await prisma.user.findUnique({
+        where: {
+          clerkId: userId,
+        },
+        select: {
+          id: true,
+          onboardingCompleted: true,
+        },
+      });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    if (!user.onboardingCompleted) {
+      return {
+        success: false,
+        message:
+          "Complete onboarding first",
+      };
+    }
+
+    if (!postId?.trim()) {
+      return {
+        success: false,
+        message: "Post id required",
+      };
+    }
+
+    const post =
+      await prisma.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          id: true,
+          authorId: true,
+        },
+      });
+
+    if (!post) {
+      return {
+        success: false,
+        message: "Post not found",
+      };
+    }
+
+    // Authorization Check
+
+    if (post.authorId !== user.id) {
+      return {
+        success: false,
+        message:
+          "You can delete only your own posts",
+      };
+    }
+
+    // Transaction
+
+    await prisma.$transaction([
+      prisma.postImage.deleteMany({
+        where: {
+          postId,
+        },
+      }),
+
+      prisma.postVideo.deleteMany({
+        where: {
+          postId,
+        },
+      }),
+
+      prisma.post.delete({
+        where: {
+          id: postId,
+        },
+      }),
+    ]);
+
+    return {
+      success: true,
+      message:
+        "Post deleted successfully",
+    };
+  } catch (error) {
+    console.error(
+      "Delete Post Error:",
+      error
+    );
+
+    return {
+      success: false,
+      message:
+        "Failed to delete post",
+    };
+  }
+}
