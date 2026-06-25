@@ -1,10 +1,13 @@
 import { auth } from "@clerk/nextjs/server";
-import { string, success, z } from "zod";
+import {  z } from "zod";
 
 import { prisma } from "@/lib/prisma";
-import { postSchema } from "@/validation/post";
+import { postSchema,updatePostSchema } from "@/validation/post";
 
 type CreatePostInput = z.infer<typeof postSchema>;
+type UpdatePostInput = z.infer<
+  typeof updatePostSchema
+>;
 
 export  async function createPost(
   data: CreatePostInput
@@ -591,4 +594,292 @@ export async function deletePost(
         "Failed to delete post",
     };
   }
+}
+
+// update post 
+
+// export async function  upddatePost(postId:string,  data: UpdatePostInput
+// ) {
+  
+
+//   try {
+//     const {userId}= await auth();
+       
+//     if(!userId){
+//       return{
+//         status:false,
+//         message:"unauthorised user"
+  
+//       }
+//    }
+//       const user= await prisma.user.findUnique({
+//         where:{
+//           clerkId:userId,
+//         },select:{
+//           id:true,
+//           onboardingCompleted:true
+//         }
+//       }
+//     )
+//        if(!user){
+//         return{
+//           status:false,
+//           message:"user not found"
+//         }
+//        }
+
+//        if(!user.onboardingCompleted){
+//         return{
+//            status:false,
+//            message:"complete your onboarding "
+//         }
+//        }
+
+//        if(!postId){
+//         return{
+//           status:false,
+//           message:"postid missing "
+//         }
+//        }
+        
+//        const post= await prisma.post.findUnique({
+//         where:{
+//           id:postId
+//         } ,
+//         select:{
+//           id:true,
+//           authorId:true,
+//           content:true,
+//           images:true,
+//           videos:true
+//         }
+//        })
+
+//        if(!post){
+//         return{
+//           status:false,
+//           message:"post not found "
+//         }
+//        }
+
+//        const upddatePost= await prisma.post.update({
+//         where:{
+//           id:postId
+//         },
+//         data:{
+//           content:newContent
+//         }
+//        })
+//         const validatedData = postSchema.parse(data);
+    
+//   } catch (error) {
+//     console.error(
+//       "update post error :",
+//       error
+//     );
+
+//     return {
+//       success: false,
+//       message:
+//         "Failed to update post  post",
+//     };
+//   }
+ 
+// }
+export async function updatePost(
+postId: string,
+data: UpdatePostInput
+) {
+try {
+// --------------------------
+// Authentication Check
+// --------------------------
+
+const { userId } = await auth();
+
+if (!userId) {
+  return {
+    success: false,
+    message: "Unauthorized",
+  };
+}
+
+// --------------------------
+// User Check
+// --------------------------
+
+const user = await prisma.user.findUnique({
+  where: {
+    clerkId: userId,
+  },
+  select: {
+    id: true,
+    onboardingCompleted: true,
+  },
+});
+
+if (!user) {
+  return {
+    success: false,
+    message: "User not found",
+  };
+}
+
+// --------------------------
+// Onboarding Check
+// --------------------------
+
+if (!user.onboardingCompleted) {
+  return {
+    success: false,
+    message:
+      "Complete onboarding before updating posts",
+  };
+}
+
+// --------------------------
+// Validate Input
+// --------------------------
+
+const validatedData =
+  postSchema.parse(data);
+
+// --------------------------
+// Find Post
+// --------------------------
+
+const existingPost =
+  await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      id: true,
+      authorId: true,
+    },
+  });
+
+if (!existingPost) {
+  return {
+    success: false,
+    message: "Post not found",
+  };
+}
+
+// --------------------------
+// Ownership Check
+// --------------------------
+
+if (
+  existingPost.authorId !== user.id
+) {
+  return {
+    success: false,
+    message:
+      "You can update only your own posts",
+  };
+}
+
+// --------------------------
+// Transaction
+// --------------------------
+
+const updatedPost =
+  await prisma.$transaction(
+    async (tx) => {
+      // Delete old images
+
+      await tx.postImage.deleteMany({
+        where: {
+          postId,
+        },
+      });
+
+      // Delete old videos
+
+      await tx.postVideo.deleteMany({
+        where: {
+          postId,
+        },
+      });
+
+      // Update post
+
+      const post =
+        await tx.post.update({
+          where: {
+            id: postId,
+          },
+
+          data: {
+            content:
+              validatedData.content,
+
+            visibility:
+              validatedData.visibility,
+
+            images: {
+              create:
+                validatedData.images?.map(
+                  (url) => ({
+                    imageUrl: url,
+                  })
+                ) ?? [],
+            },
+
+            videos: {
+              create:
+                validatedData.videos?.map(
+                  (url) => ({
+                    videoUrl: url,
+                  })
+                ) ?? [],
+            },
+          },
+
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                profileImageUrl: true,
+                roleSelected: true,
+              },
+            },
+
+            images: true,
+            videos: true,
+          },
+        });
+
+      return post;
+    }
+  );
+
+return {
+  success: true,
+  post: updatedPost,
+};
+
+} catch (error) {
+console.error(
+"Update Post Error:",
+error
+);
+
+if (error instanceof z.ZodError) {
+  return {
+    success: false,
+    message:
+      error.issues[0]?.message ??
+      "Validation failed",
+  };
+}
+
+return {
+  success: false,
+  message: "Failed to update post",
+};
+
+}
 }
