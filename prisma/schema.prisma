@@ -19,6 +19,16 @@ enum PostVisibility {
   PUBLIC
 }
 
+enum UploadStatus {
+  UPLOADED
+  USED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
 model User {
   id       String  @id @default(uuid())
   clerkId  String  @unique
@@ -41,6 +51,7 @@ model User {
   tnpProfile     TnpProfile?
 
   posts Post[]
+  uploads MediaUpload[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -143,7 +154,10 @@ model Post {
 model PostImage{
   id     String @id @default(uuid())
   postId  String
-  imageUrl  String
+  mediaUploadId String
+
+  mediaUpload MediaUpload  @relation(fields:[mediaUploadId],references:[id])
+  
   post   Post @relation(fields: [postId],references: [id])
    createdAt DateTime @default(now())
 }
@@ -151,8 +165,28 @@ model PostImage{
 model  PostVideo{
   id    String  @id @default(uuid())
   postId  String 
-  videoUrl String
+  mediaUploadId  String
+
+mediaUpload MediaUpload  @relation(fields:[mediaUploadId],references:[id]) 
+ 
   post    Post @relation(fields: [postId],references: [id])
   createdAt DateTime @default(now())
   
+}
+
+model MediaUpload{
+  id  String @id @default(uuid())
+  userId String 
+  user User  @relation(fields: [userId], references: [id])
+  url  String
+  publicId  String
+  images PostImage[]
+
+videos PostVideo[]
+  resourceType  MediaType
+  size       Int
+  status    UploadStatus @default(UPLOADED)
+  createdAt  DateTime       @default(now())
+
+
 }
