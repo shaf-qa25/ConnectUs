@@ -72,7 +72,7 @@ export  async function createPost(
     // --------------------------
 
     const validatedData = postSchema.parse(data);
-
+          console.log(validatedData);
     // --------------------------
     // Create Post
     // --------------------------
@@ -119,6 +119,7 @@ export  async function createPost(
         videos: true,
       },
     });
+      console.log("post .....",post )
 
     return {
       success: true,
