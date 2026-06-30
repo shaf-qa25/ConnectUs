@@ -156,9 +156,9 @@ model PostImage{
   postId  String
   mediaUploadId String
 
-  mediaUpload MediaUpload  @relation(fields:[mediaUploadId],references:[id])
-  
-  post   Post @relation(fields: [postId],references: [id])
+  mediaUpload MediaUpload  @relation(fields:[mediaUploadId],references:[id], onDelete: Cascade)
+
+  post   Post @relation(fields: [postId],references: [id],  onDelete: Cascade)
    createdAt DateTime @default(now())
 }
 
@@ -167,9 +167,9 @@ model  PostVideo{
   postId  String 
   mediaUploadId  String
 
-mediaUpload MediaUpload  @relation(fields:[mediaUploadId],references:[id]) 
+mediaUpload MediaUpload  @relation(fields:[mediaUploadId],references:[id] ,  onDelete: Cascade) 
  
-  post    Post @relation(fields: [postId],references: [id])
+  post    Post @relation(fields: [postId],references: [id] , onDelete: Cascade)
   createdAt DateTime @default(now())
   
 }
@@ -177,9 +177,9 @@ mediaUpload MediaUpload  @relation(fields:[mediaUploadId],references:[id])
 model MediaUpload{
   id  String @id @default(uuid())
   userId String 
-  user User  @relation(fields: [userId], references: [id])
-  url  String
-  publicId  String
+  user User  @relation(fields: [userId], references: [id],  onDelete: Cascade)
+  url  String  @unique
+  publicId  String @unique
   images PostImage[]
 
 videos PostVideo[]
@@ -187,6 +187,6 @@ videos PostVideo[]
   size       Int
   status    UploadStatus @default(UPLOADED)
   createdAt  DateTime       @default(now())
-
+   updatedAt DateTime @updatedAt
 
 }
